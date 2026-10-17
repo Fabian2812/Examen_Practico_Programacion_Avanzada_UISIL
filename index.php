@@ -2,6 +2,7 @@
 declare(strict_types=1);
 require_once __DIR__ . '/functions.php';
 
+// 1. Lee los filtros enviados por GET; los valores fuera de las listas se descartan.
 $search = trim((string) ($_GET['q'] ?? ''));
 $lab = trim((string) ($_GET['laboratorio'] ?? ''));
 $status = (string) ($_GET['estado'] ?? '');
@@ -9,7 +10,10 @@ $priority = (string) ($_GET['prioridad'] ?? '');
 if (!in_array($status, STATUSES, true)) $status = '';
 if (!in_array($priority, PRIORITIES, true)) $priority = '';
 
+// 2. Obtiene laboratorios existentes para poblar el filtro.
 $labs = db()->query('SELECT DISTINCT laboratorio FROM incidencias ORDER BY laboratorio')->fetch_all(MYSQLI_ASSOC);
+// La consulta se construye según los filtros elegidos. Cada dato entra como parámetro,
+// nunca concatenado al SQL, para evitar inyección SQL.
 $sql = 'SELECT id, reportado_por, laboratorio, equipo, descripcion, prioridad, estado, creado_en FROM incidencias WHERE 1=1';
 $params = [];
 $types = '';
@@ -40,17 +44,20 @@ if ($params) $stmt->bind_param($types, ...$params);
 $stmt->execute();
 $incidents = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
+// 3. Los cuatro indicadores resumen todas las incidencias, aunque haya filtros activos.
 $totals = ['total' => 0, 'pendientes' => 0, 'proceso' => 0, 'resueltas' => 0];
 $summary = db()->query("SELECT COUNT(*) total, SUM(estado = 'Pendiente') pendientes, SUM(estado = 'En proceso') proceso, SUM(estado = 'Resuelta') resueltas FROM incidencias")->fetch_assoc();
 foreach ($totals as $key => $_) $totals[$key] = (int) ($summary[$key] ?? 0);
 
 render_header('Incidencias');
 ?>
+<!-- Presentación y acceso directo al formulario de registro. -->
 <section class="hero">
   <div><p class="eyebrow">CENTRO DE SOPORTE</p><h1>Incidencias tecnológicas</h1><p>Registre una falla y consulte el avance de todas las solicitudes del campus.</p></div>
   <a class="button button-primary" href="create.php">+ Nueva incidencia</a>
 </section>
 
+<!-- Contadores generales calculados con una consulta a MySQL. -->
 <section class="stats" aria-label="Resumen de incidencias">
   <div class="stat"><span>Total</span><strong><?= $totals['total'] ?></strong></div>
   <div class="stat"><span>Pendientes</span><strong><?= $totals['pendientes'] ?></strong></div>
@@ -58,6 +65,7 @@ render_header('Incidencias');
   <div class="stat"><span>Resueltas</span><strong><?= $totals['resueltas'] ?></strong></div>
 </section>
 
+<!-- El formulario GET permite compartir o recargar la búsqueda sin modificar datos. -->
 <section class="panel filters-panel">
   <div class="section-heading"><div><p class="eyebrow">CONSULTA</p><h2>Buscar incidencias</h2></div><span><?= count($incidents) ?> resultado(s)</span></div>
   <form method="get" class="filter-grid">
@@ -69,6 +77,7 @@ render_header('Incidencias');
   </form>
 </section>
 
+<!-- Tabla de resultados. Editar solo aparece cuando hay sesión administrativa. -->
 <section class="panel list-panel">
   <div class="section-heading"><div><p class="eyebrow">REGISTRO</p><h2>Listado de incidencias</h2></div></div>
   <?php if (!$incidents): ?><div class="empty-state"><strong>No hay incidencias para mostrar.</strong><p>Pruebe otros filtros o registre una nueva solicitud.</p></div>

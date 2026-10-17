@@ -30,6 +30,15 @@ Aplicación web de gestión de incidencias tecnológicas realizada con PHP, MySQ
 4. Inicie sesión como administrador, cambie su estado y edite un dato.
 5. Muestre la confirmación de eliminación y, si desea, elimínela.
 
+## Guion para explicar el código (3 minutos)
+
+1. **Inicio y base de datos:** «`schema.sql` crea dos tablas: `usuarios` para administradores e `incidencias` para los reportes. `config.php` abre la conexión `mysqli`». Muestre el listado en `index.php` y sus contadores.
+2. **Registro y consulta:** «`create.php` valida y guarda una incidencia con una consulta preparada. `index.php` permite buscar y filtrar; `view.php` enseña el detalle y las fechas». Registre una falla y filtre el resultado.
+3. **Administración:** «`setup.php` crea la primera cuenta y guarda un hash de la contraseña mediante `password_hash`; `login.php` la verifica y guarda la sesión. Solo una sesión administrativa puede editar, cambiar el estado o eliminar». Inicie sesión y cambie el estado.
+4. **Seguridad y diseño:** «`functions.php` reúne la validación, los tokens CSRF y el escape HTML. `assets/styles.css` define la apariencia oscura y adaptable». Señale la confirmación antes de eliminar.
+
+Los comentarios `//` en PHP, `<!-- -->` en HTML, `--` en SQL y `/* */` en CSS marcan los bloques principales para ubicar cada parte durante la exposición.
+
 ## Estructura
 
 | Archivo | Función |

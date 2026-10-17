@@ -1,9 +1,11 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/functions.php';
+// Formulario público: cualquier persona puede reportar una falla.
 $errors = [];
 $data = ['reportado_por' => '', 'laboratorio' => '', 'equipo' => '', 'descripcion' => '', 'prioridad' => 'Media'];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // POST: valida el token y los campos antes de guardar en MySQL.
     verify_csrf();
     foreach ($data as $key => $_) $data[$key] = is_string($_POST[$key] ?? null) ? trim($_POST[$key]) : '';
     try {
@@ -11,6 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = db()->prepare('INSERT INTO incidencias (reportado_por, laboratorio, equipo, descripcion, prioridad) VALUES (?, ?, ?, ?, ?)');
         $stmt->bind_param('sssss', $valid['reportado_por'], $valid['laboratorio'], $valid['equipo'], $valid['descripcion'], $valid['prioridad']);
         $stmt->execute();
+        // Se abre el detalle del nuevo registro para confirmar que se guardó.
         flash('Incidencia registrada correctamente.');
         redirect('view.php?id=' . db()->insert_id);
     } catch (InvalidArgumentException $error) {
@@ -19,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 render_header('Nueva incidencia');
 ?>
+<!-- Formulario de alta: required ayuda en el navegador; validate_incident protege el servidor. -->
 <div class="page-heading"><a class="back-link" href="index.php">← Volver al listado</a><p class="eyebrow">NUEVA SOLICITUD</p><h1>Reportar una falla</h1><p>Describa el problema para que el equipo de soporte pueda darle seguimiento.</p></div>
 <section class="panel form-panel">
   <?php foreach ($errors as $error): ?><div class="alert alert-error" role="alert"><?= e($error) ?></div><?php endforeach; ?>

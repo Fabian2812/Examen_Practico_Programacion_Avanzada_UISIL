@@ -1,7 +1,9 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/functions.php';
+// Solo un administrador puede abrir o enviar este formulario.
 require_admin();
+// El ID señala qué fila se editará; si no existe, devolvemos 404.
 $id = incident_id($_GET['id'] ?? $_POST['id'] ?? null);
 $incident = find_incident($id);
 if (!$incident) {
@@ -11,6 +13,7 @@ if (!$incident) {
 $data = $incident;
 $error = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // POST: validar, actualizar con parámetros y volver al detalle.
     verify_csrf();
     foreach (['reportado_por', 'laboratorio', 'equipo', 'descripcion', 'prioridad'] as $key) {
         $data[$key] = is_string($_POST[$key] ?? null) ? trim($_POST[$key]) : '';
@@ -28,6 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 render_header('Editar incidencia');
 ?>
+<!-- Los campos se rellenan con los datos actuales; e() escapa su contenido. -->
 <div class="page-heading"><a class="back-link" href="view.php?id=<?= $id ?>">← Volver al detalle</a><p class="eyebrow">ADMINISTRACIÓN</p><h1>Editar incidencia #<?= $id ?></h1><p>Actualice los datos de la solicitud.</p></div>
 <section class="panel form-panel">
   <?php if ($error): ?><div class="alert alert-error" role="alert"><?= e($error) ?></div><?php endif; ?>

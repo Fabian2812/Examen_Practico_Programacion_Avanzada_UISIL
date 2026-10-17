@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/functions.php';
+// Instalación inicial: el formulario solo está disponible si no hay usuarios.
 $count = (int) db()->query('SELECT COUNT(*) FROM usuarios')->fetch_row()[0];
 if ($count > 0) {
     flash('Ya existe un administrador. Inicie sesión.', 'error');
@@ -8,6 +9,7 @@ if ($count > 0) {
 }
 $error = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Comprueba usuario y contraseña antes de crear el primer administrador.
     verify_csrf();
     $username = is_string($_POST['usuario'] ?? null) ? trim($_POST['usuario']) : '';
     $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
@@ -17,6 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($password !== $confirm) {
         $error = 'Las contraseñas no coinciden.';
     } else {
+        // Se guarda un hash, no la contraseña escrita por el usuario.
         $hash = password_hash($password, PASSWORD_DEFAULT);
         $stmt = db()->prepare('INSERT INTO usuarios (usuario, password_hash) VALUES (?, ?)');
         $stmt->bind_param('ss', $username, $hash);
@@ -27,6 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 render_header('Configurar administrador');
 ?>
+<!-- Esta pantalla deja de mostrarse después de crear la primera cuenta. -->
 <div class="page-heading centered"><p class="eyebrow">CONFIGURACIÓN INICIAL</p><h1>Crear administrador</h1><p>Esta pantalla solo está disponible mientras no exista ningún usuario.</p></div>
 <section class="panel auth-panel">
   <?php if ($error): ?><div class="alert alert-error" role="alert"><?= e($error) ?></div><?php endif; ?>

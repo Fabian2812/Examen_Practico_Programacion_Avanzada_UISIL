@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/config.php';
 
+// La sesión recuerda al administrador y el token de seguridad entre páginas.
 if (session_status() !== PHP_SESSION_ACTIVE) {
     if (getenv('SESSION_SAVE_PATH')) {
         session_save_path((string) getenv('SESSION_SAVE_PATH'));
@@ -10,20 +11,24 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 
+// Valores permitidos: también se usan para construir los menús desplegables.
 const PRIORITIES = ['Baja', 'Media', 'Alta', 'Critica'];
 const STATUSES = ['Pendiente', 'En proceso', 'Resuelta'];
 
+// Escapa texto antes de mostrarlo en HTML; evita que un dato ejecute código.
 function e(?string $value): string
 {
     return htmlspecialchars($value ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
+// Después de un POST regresamos mediante 303 para evitar envíos duplicados.
 function redirect(string $path): never
 {
     header('Location: ' . $path, true, 303);
     exit;
 }
 
+// CSRF: cada formulario POST envía un token propio de la sesión.
 function csrf_token(): string
 {
     if (!isset($_SESSION['csrf_token'])) {
@@ -37,6 +42,7 @@ function csrf_field(): string
     return '<input type="hidden" name="csrf_token" value="' . e(csrf_token()) . '">';
 }
 
+// Rechaza formularios enviados sin el token correcto.
 function verify_csrf(): void
 {
     if (!isset($_POST['csrf_token']) || !is_string($_POST['csrf_token']) ||
@@ -46,11 +52,13 @@ function verify_csrf(): void
     }
 }
 
+// Un administrador autenticado tiene su identificador guardado en la sesión.
 function is_admin(): bool
 {
     return isset($_SESSION['admin_id']) && is_int($_SESSION['admin_id']);
 }
 
+// Bloquea las operaciones de edición, cambio de estado y eliminación.
 function require_admin(): void
 {
     if (!is_admin()) {
@@ -59,6 +67,7 @@ function require_admin(): void
     }
 }
 
+// Mensajes que aparecen una vez después de una redirección.
 function flash(string $message, string $type = 'success'): void
 {
     $_SESSION['flash'] = ['message' => $message, 'type' => $type];
@@ -71,6 +80,7 @@ function pull_flash(): ?array
     return $flash;
 }
 
+// Los IDs deben ser enteros positivos antes de utilizarlos en una consulta.
 function incident_id(mixed $value): int
 {
     $id = filter_var($value, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
@@ -81,6 +91,7 @@ function incident_id(mixed $value): int
     return $id;
 }
 
+// Busca una incidencia concreta con una consulta preparada.
 function find_incident(int $id): ?array
 {
     $stmt = db()->prepare('SELECT * FROM incidencias WHERE id = ?');
@@ -89,6 +100,8 @@ function find_incident(int $id): ?array
     return $stmt->get_result()->fetch_assoc() ?: null;
 }
 
+// Valida en el servidor los campos obligatorios, su longitud y la prioridad.
+// HTML también valida, pero puede omitirse desde una petición manual.
 function validate_incident(array $source): array
 {
     $data = [];
@@ -108,6 +121,7 @@ function validate_incident(array $source): array
     return $data;
 }
 
+// Cabecera y navegación compartidas por todas las páginas.
 function render_header(string $title): void
 {
     $flash = pull_flash();
@@ -124,6 +138,7 @@ function render_header(string $title): void
     }
 }
 
+// Cierra el contenido principal y muestra el pie de página común.
 function render_footer(): void
 {
     echo '</main><footer class="site-footer"><div class="container">Sistema de gestión de incidencias tecnológicas · UISIL</div></footer></body></html>';

@@ -1,3 +1,4 @@
+/* Paleta y tipografía compartidas por todas las páginas. */
 :root {
   color-scheme: dark;
   --bg: #17130f;
@@ -17,6 +18,7 @@
 
 * { box-sizing: border-box; }
 
+/* Fondo oscuro con un grano sutil para el aspecto rústico. */
 body {
   min-height: 100vh;
   margin: 0;
@@ -38,6 +40,7 @@ button { cursor: pointer; }
 
 .container { width: min(1180px, calc(100% - 40px)); margin-inline: auto; }
 
+/* Encabezado: marca, menú y acceso a administración. */
 .site-header {
   background: linear-gradient(90deg, #211912, #2b2118 48%, #201912);
   border-bottom: 1px solid #73583b;
@@ -55,11 +58,13 @@ button { cursor: pointer; }
 
 .site-footer { margin-top: 72px; padding: 24px 0; border-top: 1px solid var(--border-soft); color: var(--muted); font-size: 13px; }
 
+/* Presentación de la página principal y títulos de las páginas interiores. */
 .hero { display: flex; justify-content: space-between; align-items: center; gap: 24px; padding: 53px 0 32px; }
 .eyebrow { margin: 0 0 9px; color: var(--accent); font-size: 11px; font-weight: 800; letter-spacing: .18em; }
 .hero h1, .page-heading h1 { margin: 0 0 11px; font-family: var(--font-display); font-size: clamp(36px, 4.5vw, 54px); font-weight: 700; line-height: 1.08; letter-spacing: -.015em; }
 .hero p:not(.eyebrow), .page-heading p:not(.eyebrow) { max-width: 650px; margin: 0; color: var(--muted); }
 
+/* Botones principales, secundarios y de eliminación. */
 .button { display: inline-flex; align-items: center; justify-content: center; min-height: 43px; padding: 9px 18px; border: 1px solid transparent; border-radius: 5px; font-size: 13px; font-weight: 800; text-align: center; white-space: nowrap; transition: background .15s, border-color .15s, transform .15s; }
 .button:hover { text-decoration: none; transform: translateY(-1px); }
 .button-primary { background: linear-gradient(#e6bd86, #ca995e); border-color: #e8bf88; color: #24170d; }
@@ -70,6 +75,7 @@ button { cursor: pointer; }
 .button-danger:hover { background: #512e29; color: #ffe1d9; }
 .button-full { width: 100%; }
 
+/* Tarjetas de resumen y paneles que contienen filtros, tablas y formularios. */
 .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
 .stat, .panel { border: 1px solid var(--border); border-radius: 8px; background: linear-gradient(155deg, rgba(255, 229, 185, .035), transparent 55%), var(--surface); box-shadow: var(--shadow); }
 .stat { position: relative; overflow: hidden; padding: 20px 23px; border-left: 3px solid #bd8b56; }
@@ -81,6 +87,7 @@ button { cursor: pointer; }
 .section-heading h2, .detail-aside h2 { margin: 0; font-family: var(--font-display); font-size: 24px; font-weight: 700; }
 .section-heading > span { color: var(--muted); font-size: 13px; }
 
+/* Controles de búsqueda y campos de los formularios. */
 .filter-grid { display: grid; grid-template-columns: 2fr 1.3fr 1fr 1fr auto; align-items: end; gap: 12px; }
 label { display: block; color: #e7d4bc; font-size: 13px; font-weight: 700; }
 label span { color: var(--danger); }
@@ -91,6 +98,7 @@ input:focus, select:focus, textarea:focus { border-color: var(--accent-strong); 
 textarea { min-height: 130px; resize: vertical; }
 .filter-actions { display: flex; gap: 8px; }
 
+/* Listado de incidencias; el contenedor permite desplazamiento en pantallas pequeñas. */
 .table-wrap { overflow: auto; }
 table { width: 100%; min-width: 770px; border-collapse: collapse; }
 th, td { padding: 16px 11px; border-bottom: 1px solid var(--border-soft); text-align: left; vertical-align: top; }
@@ -104,12 +112,14 @@ td small { display: block; margin-top: 4px; color: var(--muted); font-size: 12px
 .actions { white-space: nowrap; }
 .actions a { display: inline-block; margin-right: 12px; font-weight: 700; }
 
+/* Etiquetas de colores para distinguir prioridad y estado de un vistazo. */
 .badge { display: inline-block; padding: 5px 10px; border: 1px solid transparent; border-radius: 4px; font-size: 12px; font-weight: 800; white-space: nowrap; }
 .priority-baja, .status-done { border-color: #537e60; background: #253d2c; color: #c7eccb; }
 .priority-media, .status-progress { border-color: #607c8a; background: #253741; color: #d0e9f4; }
 .priority-alta, .status-pending { border-color: #a47b42; background: #49341b; color: #ffe0a6; }
 .priority-critica { border-color: #a56055; background: #4a2925; color: #ffd0c4; }
 
+/* Pantallas sin resultados y formularios de creación o edición. */
 .empty-state { padding: 55px 15px; color: var(--muted); text-align: center; }
 .empty-state strong { color: var(--text); font-family: var(--font-display); font-size: 19px; }
 .empty-state p { margin: 5px 0 0; }
@@ -122,11 +132,13 @@ td small { display: block; margin-top: 4px; color: var(--muted); font-size: 12px
 .full-width { grid-column: 1 / -1; }
 .form-actions { display: flex; gap: 10px; margin-top: 25px; }
 
+/* Mensajes de éxito o error que se muestran después de una acción. */
 .alert { padding: 13px 16px; border: 1px solid; border-radius: 5px; margin: 20px 0; font-weight: 650; }
 .alert-success { border-color: #5a8862; background: #213a29; color: #d5f3d8; }
 .alert-error { border-color: #a7655b; background: #472824; color: #ffd9d0; }
 .form-panel .alert, .auth-panel .alert { margin-top: 0; }
 
+/* Vista de detalle y controles exclusivos del administrador. */
 .detail-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
 .detail-grid .panel { margin-bottom: 0; }
 .detail-main h3 { margin: 25px 0 9px; color: var(--muted); font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
@@ -142,9 +154,11 @@ td small { display: block; margin-top: 4px; color: var(--muted); font-size: 12px
 .auth-panel form { display: grid; gap: 18px; }
 .auth-panel .button { margin-top: 6px; }
 
+/* Accesibilidad: foco visible y reducción de movimiento si el usuario lo solicita. */
 :focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
 
+/* Diseño adaptable para tabletas y teléfonos. */
 @media (max-width: 1050px) {
   .filter-grid { grid-template-columns: repeat(2, 1fr); }
   .filter-actions { grid-column: 1 / -1; }
